@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 tan = np.tan
 
 
@@ -26,11 +27,24 @@ def mesh_create(r_le, r_te, t_le, t_te, sweep_angle):
     te_ygrid = le_ygrid[:]
     te_xgrid = list(map(lambda y : r_te[0]-(y*((r_te[0]-t_te[0])/t_te[1])), te_ygrid))
     te_xy_grid = [(x,y) for x,y in zip(te_xgrid, te_ygrid)]
+    #Stores start point((x,y) in le) and end point((x,y) in te) of chord variation along span
     chord_endpoints = [[pos_le, pos_te] for pos_le,pos_te in zip(le_xy_grid, te_xy_grid)]
-    span_grid = map(lambda (pos_le, pos_te) : [(x,y) for x,y in zip(np.linspace(pos_le[0], pos_te[0], 5), np.linspace(pos_le[1], pos_te[1], 5))], chord_endpoints)   
-    return span_grid
+    #Stores grid points from le to te along span direction
+    planform_grid = map(lambda (pos_le, pos_te) : [[x,y] for x,y in zip(np.linspace(pos_le[0], pos_te[0], 5), np.linspace(pos_le[1], pos_te[1], 5))], chord_endpoints)   
+    return np.asarray(planform_grid)
 
+def plot_mesh(planform_grid):
+    plt.figure(1)
+    for chord_line in planform_grid:
+        chord_line_x = chord_line[:,0]
+        chord_line_y = chord_line[:,1]
+        plt.plot(chord_line_x, chord_line_y, 'r-')
+    for i in range(len(planform_grid[0])):
+        span_line = planform_grid[:,i]
+        span_line_x = span_line[:,0]
+        span_line_y = span_line[:,1]
+        plt.plot(span_line_x, span_line_y, 'r-')
+        
 
-    
 
 
