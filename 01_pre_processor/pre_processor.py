@@ -37,6 +37,7 @@ def mesh_create(r_le, r_te, t_le, t_te, sweep_angle):
 
 
 def plot_mesh(planform_grid):
+    # Plots the mesh created on the surface of the given wing geometry
     plt.figure(1)
     for chord_line in planform_grid:
         chord_line_x = chord_line[:,0]
@@ -70,17 +71,45 @@ class panel:
         self.pos_trail_vor1 = (self.pos_c_by_4[0], self.pos1[1])
         self.pos_trail_vor2 = (self.pos_c_by_4[0], self.pos4[1])
     
-    def downwash_bound_vortex(self, panel_2):
-        pass
+    def downwash_bound_vortex(self, panel_j):
+        # Calculates the velocity induced on panel control point by bound vortex of panel j
+        trail_vor1 = panel_j.pos_trail_vor1
+        trail_vor2 = panel_j.pos_trail_vor2
+        a = (1.0/(4.0*pi))*(1.0/coeff1(trail_vor1, trail_vor2))
+        b = coeff2(trail_vor1, trail_vor2, 0)/panel_cp_distance(trail_vor1)
+        c = coeff2(trail_vor1, trail_vor2, 1)/panel_cp_distance(trail_vor2)
+        vel = a*(b-c)
+        return vel
+
+    def downwash_trailing_vortex1(self, panel_j):
+        # Calculates the velocity induced on panel control point by first trailing vortex of panel j
+        trail_vor1 = panel_j.pos_trail_vor1
+        trail_vor2 = panel_j.pos_trail_vor2
+        a = (1.0/(4.0*pi))*(1/(trail_vor1[1]-self.pos_cp[1]))
+        b = (self.pos_cp[0]-trail_vor1[0])/panel_cp_distance(trail_vor1)
+        vel = a*(1.0+b)
+        return vel
     
-    def downwash_trailing_vortex_1(self, panel_2):
-        pass
+    def downwash_trailing_vortex2(self, panel_j):
+        # Calculates the velocity induced on panel control point by second trailing vortex of panel j
+        trail_vor1 = panel_j.pos_trail_vor1
+        trail_vor2 = panel_j.pos_trail_vor2
+        a = (-1.0/(4.0*pi))*(1.0/(trail_vor2[1]-self.pos_cp[1]))
+        b = (self.pos_cp[0]-trail_vor2[0])/panel_cp_distance(trail_vor2)
+        vel = a*(1.0+b)
+        return vel
     
-    def downwash_trailing_vortex_2(self, panel_2):
-        pass
+    def panel_cp_distance(self, pos_trail_vor):
+        # Calculates distance between control point of panel with the trailing vortex co-ordinates of panel j 
+        return sqrt((self.pos_cp[0]-pos_trail_vor[0])**2 + (self.pos_cp[1]-pos_trail_vor[1])**2) 
     
-    def panel_cp_distance(self, panel_2):
-        pass
+    def coeff1(self, pos_vor1, pos_vor2):
+        return (self.pos_cp[0]-pos_vor1[0])*(self.pos_cp[1]-pos_vor2[1]) - (self.pos_cp[0]-pos_vor2[0])*(self.pos_cp[1]-pos_vor1[1])
+    
+    def coeff2(self, pos_vor1, pos_vor2, num):
+        pos_vor_num = [pos_vor1, pos_vor2]
+        return (pos_vor2[0]-pos_vor1[0])*(self.pos_cp[0]-pos_vor_num[num][0]) - (pos_vor2[1]-pos_vor1[1])*(self.pos_cp[1]-pos_vor_num[num][1])
+        
         
 
 def create_panels(planform_grid):
