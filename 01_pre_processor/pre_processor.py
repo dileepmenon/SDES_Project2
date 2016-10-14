@@ -32,7 +32,7 @@ def mesh_create(r_le, r_te, t_le, t_te, sweep_angle):
     # Stores start point and end point of chord variation along span
     chord_endpoints = [[pos_le, pos_te] for pos_le,pos_te in zip(le_xy_grid, te_xy_grid)]
     # Stores grid points from le to te along span direction
-    planform_grid = map(lambda (pos_le, pos_te) : [[x,y] for x,y in zip(np.linspace(pos_le[0], pos_te[0], 5), np.linspace(pos_le[1], pos_te[1], 5))], chord_endpoints)   
+    planform_grid = list(map(lambda (pos_le, pos_te) : [[x,y] for x,y in zip(np.linspace(pos_le[0], pos_te[0], 5), np.linspace(pos_le[1], pos_te[1], 5))], chord_endpoints))   
     return np.asarray(planform_grid)
 
 
@@ -111,7 +111,14 @@ class panel:
         return (pos_vor2[0]-pos_vor1[0])*(self.pos_cp[0]-pos_vor_num[num][0]) - (pos_vor2[1]-pos_vor1[1])*(self.pos_cp[1]-pos_vor_num[num][1])
         
         
-
 def create_panels(planform_grid):
-    pass
+    # Initializes the panels class and stores the list of panel classes 
+    list_of_starboard_panels = []
+    list_of_port_panels = []
+    for i,j in zip(planform_grid[:-1], planform_grid[1:]):
+        for k in range(len(i)-1):
+            list_of_starboard_panels.append(panel((i[k][0],i[k][1]),(i[k+1][0],i[k+1][1]),(j[k+1][0],j[k+1][1]),(j[k][0],j[k][1])))
+            list_of_port_panels.append(panel((i[k][0],-1*i[k][1]),(i[k+1][0],-1*i[k+1][1]),(j[k+1][0],-1*j[k+1][1]),(j[k][0],-1*j[k][1])))
+    list_of_all_panels = list_of_starboard_panels+list_of_port_panels
+    return list_of_all_panels
     
