@@ -81,8 +81,8 @@ class Panel:
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
         a = (1.0/(4.0*pi))*(1.0/coeff1(trail_vor1, trail_vor2))
-        b = coeff2(trail_vor1, trail_vor2, 0)/panel_cp_distance(trail_vor1)
-        c = coeff2(trail_vor1, trail_vor2, 1)/panel_cp_distance(trail_vor2)
+        b = self.coeff2(trail_vor1, trail_vor2, 0)/self.panel_cp_distance(trail_vor1)
+        c = self.coeff2(trail_vor1, trail_vor2, 1)/self.panel_cp_distance(trail_vor2)
         vel = a*(b-c)
         return vel
 
@@ -91,7 +91,7 @@ class Panel:
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
         a = (1.0/(4.0*pi))*(1/(trail_vor1[1]-self.pos_cp[1]))
-        b = (self.pos_cp[0]-trail_vor1[0])/panel_cp_distance(trail_vor1)
+        b = (self.pos_cp[0]-trail_vor1[0])/self.panel_cp_distance(trail_vor1)
         vel = a*(1.0+b)
         return vel
     
@@ -100,7 +100,7 @@ class Panel:
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
         a = (-1.0/(4.0*pi))*(1.0/(trail_vor2[1]-self.pos_cp[1]))
-        b = (self.pos_cp[0]-trail_vor2[0])/panel_cp_distance(trail_vor2)
+        b = (self.pos_cp[0]-trail_vor2[0])/self.panel_cp_distance(trail_vor2)
         vel = a*(1.0+b)
         return vel
     
