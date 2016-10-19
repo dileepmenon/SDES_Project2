@@ -2,12 +2,14 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 tan = np.tan
+pi = np.pi
+sqrt = np.sqrt
 
 
 def geom_create():
     # Wing parameters where r - root, t - tip, b - span, le - leading edge, te - trailing edge, S - planform area, AR - aspect ratio 
     r_chord = 1
-    taper_ratio = 2
+    taper_ratio = 1
     t_chord = r_chord/taper_ratio
     b = 10
     sweep_angle = 20 
@@ -48,13 +50,16 @@ def plot_mesh(planform_grid):
         span_line_x = span_line[:,0]
         span_line_y = span_line[:,1]
         plt.plot(span_line_x, span_line_y, 'r-')
-
+        plt.title('Discretisation of planform into panels')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.grid()
 
 def midpoint(p1, p2):
     return ((p1[0]+p2[0])/2.0, (p1[1]+p2[1])/2.0) 
 
 
-class panel:
+class Panel:
     def __init__(self, (x1,y1), (x2,y2), (x3,y3), (x4,y4)):
         # Attributes of panel
         self.pos1 = (x1,y1)
@@ -117,8 +122,8 @@ def create_panels(planform_grid):
     list_of_port_panels = []
     for i,j in zip(planform_grid[:-1], planform_grid[1:]):
         for k in range(len(i)-1):
-            list_of_starboard_panels.append(panel((i[k][0],i[k][1]),(i[k+1][0],i[k+1][1]),(j[k+1][0],j[k+1][1]),(j[k][0],j[k][1])))
-            list_of_port_panels.append(panel((i[k][0],-1*i[k][1]),(i[k+1][0],-1*i[k+1][1]),(j[k+1][0],-1*j[k+1][1]),(j[k][0],-1*j[k][1])))
+            list_of_starboard_panels.append(Panel((i[k][0],i[k][1]),(i[k+1][0],i[k+1][1]),(j[k+1][0],j[k+1][1]),(j[k][0],j[k][1])))
+            list_of_port_panels.append(Panel((i[k][0],-1*i[k][1]),(i[k+1][0],-1*i[k+1][1]),(j[k+1][0],-1*j[k+1][1]),(j[k][0],-1*j[k][1])))
     list_of_all_panels = list_of_starboard_panels+list_of_port_panels
     return list_of_all_panels
     
