@@ -7,7 +7,12 @@ sqrt = np.sqrt
 
 
 def geom_create():
-    # Wing parameters where r - root, t - tip, b - span, le - leading edge, te - trailing edge, S - planform area, AR - aspect ratio 
+    """Creates the geometry of the wing based on the wing paramters set
+
+    Wing parameter abbreviations are:
+    r - root, t - tip, b - span, le - leading edge, te - trailing edge, 
+    S - planform area, AR - aspect ratio 
+    """
     r_chord = 1
     taper_ratio = 1
     t_chord = r_chord/taper_ratio
@@ -24,6 +29,8 @@ def geom_create():
 
 
 def mesh_create(r_le, r_te, t_le, t_te, sweep_angle):
+    """Creates grid points of the planform and returns list of all grid points
+    """ 
     # Stores (x,y) locations of grid points along le and te
     le_ygrid = np.linspace(r_le[1], t_le[1], 20)
     le_xgrid = list(map(lambda y : y*tan(math.radians(sweep_angle)), le_ygrid))
@@ -39,7 +46,11 @@ def mesh_create(r_le, r_te, t_le, t_te, sweep_angle):
 
 
 def plot_mesh(planform_grid):
-    # Plots the mesh created on the surface of the given wing geometry
+    """Plots the mesh created on the surface of the given wing geometry
+    
+    The arguement planform_grid contains all the grid points from leading
+    edge to trailing edge along span
+    """
     plt.figure(1)
     for chord_line in planform_grid:
         chord_line_x = chord_line[:,0]
@@ -55,7 +66,10 @@ def plot_mesh(planform_grid):
         plt.ylabel('y')
         plt.grid()
 
+
 def midpoint(p1, p2):
+    """Calculates the midpoint of two tuples p1 and p2
+    """
     return ((p1[0]+p2[0])/2.0, (p1[1]+p2[1])/2.0) 
 
 
@@ -77,17 +91,19 @@ class Panel:
         self.pos_trail_vor2 = (self.pos_c_by_4[0], self.pos4[1])
     
     def downwash_bound_vortex(self, panel_j):
-        # Calculates the velocity induced on panel control point by bound vortex of panel j
+        """Calculates the velocity induced on panel control point by bound vortex of panel j
+        """
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
-        a = (1.0/(4.0*pi))*(1.0/coeff1(trail_vor1, trail_vor2))
+        a = (1.0/(4.0*pi))*(1.0/self.coeff1(trail_vor1, trail_vor2))
         b = self.coeff2(trail_vor1, trail_vor2, 0)/self.panel_cp_distance(trail_vor1)
         c = self.coeff2(trail_vor1, trail_vor2, 1)/self.panel_cp_distance(trail_vor2)
         vel = a*(b-c)
         return vel
 
     def downwash_trailing_vortex1(self, panel_j):
-        # Calculates the velocity induced on panel control point by first trailing vortex of panel j
+        """Calculates the velocity induced on panel control point by first trailing vortex of panel j
+        """
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
         a = (1.0/(4.0*pi))*(1/(trail_vor1[1]-self.pos_cp[1]))
@@ -96,7 +112,8 @@ class Panel:
         return vel
     
     def downwash_trailing_vortex2(self, panel_j):
-        # Calculates the velocity induced on panel control point by second trailing vortex of panel j
+        """Calculates the velocity induced on panel control point by second trailing vortex of panel j
+        """
         trail_vor1 = panel_j.pos_trail_vor1
         trail_vor2 = panel_j.pos_trail_vor2
         a = (-1.0/(4.0*pi))*(1.0/(trail_vor2[1]-self.pos_cp[1]))
@@ -105,7 +122,8 @@ class Panel:
         return vel
     
     def panel_cp_distance(self, pos_trail_vor):
-        # Calculates distance between control point of panel with the trailing vortex co-ordinates of panel j 
+        """Calculates distance between control point of panel with the trailing vortex co-ordinates of panel j 
+        """
         return sqrt((self.pos_cp[0]-pos_trail_vor[0])**2 + (self.pos_cp[1]-pos_trail_vor[1])**2) 
     
     def coeff1(self, pos_vor1, pos_vor2):
@@ -117,7 +135,8 @@ class Panel:
         
         
 def create_panels(planform_grid):
-    # Initializes the panels class and stores the list of panel classes 
+    """Initializes the panels class and stores the list of panel classes 
+    """
     list_of_starboard_panels = []
     list_of_port_panels = []
     for i,j in zip(planform_grid[:-1], planform_grid[1:]):
